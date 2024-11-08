@@ -187,37 +187,7 @@ class RoadNetworkExtractor:
                 popup=name.replace('_', ' ').title(),
                 icon=folium.Icon(color='red', icon='info-sign')
             ).add_to(m)
-        
-        # Convert graph to GeoDataFrame for easier plotting
-        edges = ox.graph_to_gdfs(G, nodes=False, edges=True)
-        
-        # Add road network
-        for idx, row in edges.iterrows():
-            # Get capacity
-            capacity = row.get('capacity', 0)
-            
-            # Color based on capacity
-            if capacity > 3000:
-                color = 'red'
-            elif capacity > 2000:
-                color = 'orange'
-            elif capacity > 1000:
-                color = 'blue'
-            else:
-                color = 'gray'
-            
-            # Get coordinates from the geometry
-            coords = row['geometry'].coords
-            points = [(lat, lon) for lon, lat in coords]
-            
-            # Add the road segment to the map
-            folium.PolyLine(
-                points,
-                weight=2,
-                color=color,
-                opacity=0.8
-            ).add_to(m)
-        
+                
         return m
     
     def save_data(self, adj_matrix: np.ndarray, nodes: List[int], filename: str = 'road_network_data.npz'):
@@ -234,21 +204,6 @@ class RoadNetworkExtractor:
 def main():
     # Create extractor instance
     extractor = RoadNetworkExtractor()
-    # Extract road network
-    print("Extracting road network...")
-    G = extractor.extract_road_network(distance=2000)
-    
-    # Add capacity estimates
-    print("Adding capacity estimates...")
-    G = extractor.add_capacity_estimates(G)
-    
-    # Get nearest nodes to key locations
-    print("Finding nearest nodes...")
-    nearest_nodes = extractor.get_nearest_nodes(G)
-    
-    # Create adjacency matrix
-    print("Creating adjacency matrix...")
-    adj_matrix, nodes = extractor.create_adjacency_matrix(G, )
     try:
         # Extract road network
         print("Extracting road network...")

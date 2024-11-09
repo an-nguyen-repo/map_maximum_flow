@@ -1,6 +1,7 @@
 import numpy as np
 from collections import deque
 import copy
+import json 
 
 class MaximumFlowAlgo:
     def __init__(self, graph):
@@ -199,5 +200,22 @@ if __name__ == "__main__":
     g = Dinic(graph)
     print("The maximum possible flow is %d " % g.execute(source, sink))
 
+    print('TEST RUN ON MAP DATA')
+    with open('./road_network_data.json') as file:
+        data = json.load(file)
+
+    graph = data['adjacent_matrix']
+    node_name_lookup = data['node_name_lookup']
+    node_id_lookup = data['node_index_lookup']
+    source_name = 'Hang Xanh Intersection'
+    sink_name = 'Tan Son Nhat International Airport'
+    source = node_id_lookup.get(str(node_name_lookup.get(source_name)))
+    sink = node_id_lookup.get(str(node_name_lookup.get(sink_name)))
+    print(source, sink)
+    g = Edmond_Karps(graph)
+    print("The maximum possible flow is %d " % g.execute(source, sink))
+
+    g = Dinic(graph)
+    print("The maximum possible flow is %d " % g.execute(source, sink))
 
     

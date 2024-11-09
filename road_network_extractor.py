@@ -225,7 +225,9 @@ class RoadNetworkExtractor:
             'adjacent_matrix' : self.adj_matrix,
             'node_name_lookup': self.node_name_lookup,
             'node_index_lookup': self.node_index_lookup,
-            'nodes': list(self.node_index_lookup.keys())
+            'nodes': list(self.node_index_lookup.keys()),
+            'key_locations': self.key_locations,
+            'center_point': self.center_point
         }
 
         with open(filename, 'w+') as file:

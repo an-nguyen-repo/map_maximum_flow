@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_7048ece2547c1223b45972eeedca79f0 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_7048ece2547c1223b45972eeedca79f0" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_7048ece2547c1223b45972eeedca79f0 = L.map(
+                "map_7048ece2547c1223b45972eeedca79f0",
+                {
+                    center: [10.80220980017283, 106.6767828087157],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 13,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_9b78f464a751863b6334e2e5f30959ad = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+        
+    
+            tile_layer_9b78f464a751863b6334e2e5f30959ad.addTo(map_7048ece2547c1223b45972eeedca79f0);
+        
+    
+            var marker_f4da5e26c72ea8689001f16521e94f3c = L.marker(
+                [10.801184600518491, 106.7112997434957],
+                {}
+            ).addTo(map_7048ece2547c1223b45972eeedca79f0);
+        
+    
+            var icon_ebb3902a93d97790e4e2a2eb1b41b273 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_f4da5e26c72ea8689001f16521e94f3c.setIcon(icon_ebb3902a93d97790e4e2a2eb1b41b273);
+        
+    
+        var popup_c7d85c3f9e34f6b7afe7dbd9d750b67a = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_db3d9c3097f6512cf557826aed8c2623 = $(`<div id="html_db3d9c3097f6512cf557826aed8c2623" style="width: 100.0%; height: 100.0%;">Hang Xanh</div>`)[0];
+                popup_c7d85c3f9e34f6b7afe7dbd9d750b67a.setContent(html_db3d9c3097f6512cf557826aed8c2623);
+            
+        
+
+        marker_f4da5e26c72ea8689001f16521e94f3c.bindPopup(popup_c7d85c3f9e34f6b7afe7dbd9d750b67a)
+        ;
+
+        
+    
+    
+            var marker_273547f9348bb5ac2906433fc8563025 = L.marker(
+                [10.8125471, 106.66566368265137],
+                {}
+            ).addTo(map_7048ece2547c1223b45972eeedca79f0);
+        
+    
+            var icon_d35ee85b3ae3e1e0dd8327a0cd6255f6 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_273547f9348bb5ac2906433fc8563025.setIcon(icon_d35ee85b3ae3e1e0dd8327a0cd6255f6);
+        
+    
+        var popup_faa4c4d8c754dc257e855a66b62b96d7 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_c5203fabfa0ae42830f47631d372b2a8 = $(`<div id="html_c5203fabfa0ae42830f47631d372b2a8" style="width: 100.0%; height: 100.0%;">Tan Son Nhat</div>`)[0];
+                popup_faa4c4d8c754dc257e855a66b62b96d7.setContent(html_c5203fabfa0ae42830f47631d372b2a8);
+            
+        
+
+        marker_273547f9348bb5ac2906433fc8563025.bindPopup(popup_faa4c4d8c754dc257e855a66b62b96d7)
+        ;
+
+        
+    
+    
+            var marker_5d8ea8304a93bc00d1d4d94f18357008 = L.marker(
+                [10.7928977, 106.653385],
+                {}
+            ).addTo(map_7048ece2547c1223b45972eeedca79f0);
+        
+    
+            var icon_a400a2162a0b6dcd1d94d4cb0b8da442 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_5d8ea8304a93bc00d1d4d94f18357008.setIcon(icon_a400a2162a0b6dcd1d94d4cb0b8da442);
+        
+    
+        var popup_2a3769a1c3943f948e60f67f09c4cf9e = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_103affdaa838e36efe534c15c27c7289 = $(`<div id="html_103affdaa838e36efe534c15c27c7289" style="width: 100.0%; height: 100.0%;">Bay Hien</div>`)[0];
+                popup_2a3769a1c3943f948e60f67f09c4cf9e.setContent(html_103affdaa838e36efe534c15c27c7289);
+            
+        
+
+        marker_5d8ea8304a93bc00d1d4d94f18357008.bindPopup(popup_2a3769a1c3943f948e60f67f09c4cf9e)
+        ;
+
+        
+    
+</script>
+</html>

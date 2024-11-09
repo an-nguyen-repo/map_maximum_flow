@@ -1,0 +1,7 @@
+# Python cache directories
+__pycache__/
+*.py[cod]
+*.pyc
+*.npz
+*.graphml
+*.ipynb

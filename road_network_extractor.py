@@ -144,31 +144,55 @@ class RoadNetworkExtractor:
         return G
     
     
-    def create_adjacency_matrix(self, G: nx.MultiDiGraph, ) -> Tuple[np.ndarray, List[int]]:
+    def create_matrix_representation(self, G: nx.MultiDiGraph, ):
         """Create an adjacency matrix from the graph with calculated capacities as weights
 
         Args:
             G (nx.MultiDiGraph)
 
-        Returns:
-            Tuple[np.ndarray, List[int]]
         """
-        # Get list of all nodes
+        node_index_lookup = {}
+        node_name_lookup = {}
+        seen_node_name = set()
         nodes = list(G.nodes())
+        #key_location_name:
+        for loc, loc_data in self.key_locations.items():
+            node_name_lookup[loc_data['name']] = loc_data['node_id']
+            seen_node_name.add(loc_data['node_id'])
+        for idx, node_id in enumerate(nodes):
+            # node index lookup
+            node_index_lookup[node_id] = idx 
+            # node name look up 
+            if node_id not in seen_node_name:
+                neighbors = list(G.neighbors(node_id))
+                edge_name = ''
+                if neighbors:
+                    first_neighbor_id = neighbors[0]
+                    edge_data = G.get_edge_data(node_id, first_neighbor_id)[0]
+                    edge_name = edge_data.get('name', '')
+                    if edge_name is not None  and isinstance(edge_name, list):
+                        edge_name = edge_name[0]
+                    node_name = edge_name +f'#{node_id}'
+                else:
+                    node_name = edge_name +f'#{node_id}'
+                node_name_lookup[node_name] = node_id
+                seen_node_name.add(node_id)
+
+        # build adjacent matrix 
         n = len(nodes)
-        
-        # Create node to index mapping
-        node_to_idx = {node: idx for idx, node in enumerate(nodes)}
-        
-        # Create adjacency matrix
-        adj_matrix = np.zeros((n, n), dtype=float)
-        
-        # Fill adjacency matrix with capacities
-        for u, v, data in G.edges(data=True):
-            i, j = node_to_idx[u], node_to_idx[v]
-            adj_matrix[i, j] = data.get('capacity', 0)
-        
-        return adj_matrix, nodes
+        matrix = [[0 for _ in range(n)] for _ in range(n)]
+
+        for i , node1 in enumerate(nodes):
+            for j , node2 in enumerate(nodes):
+                edges = G.get_edge_data(node1, node2, default=None )
+                if edges is not None:
+                    matrix[i][j] = edges[0].get('capacity')
+
+        self.node_name_lookup = node_name_lookup
+        self.node_index_lookup = node_index_lookup
+        self.adj_matrix = matrix 
+        return matrix, node_name_lookup, node_index_lookup
+
     
     def visualize_network(self, G: nx.MultiDiGraph, ) -> folium.Map:
         """Create a Folium map visualization of the road network
@@ -193,22 +217,19 @@ class RoadNetworkExtractor:
                 
         return m
     
-    def save_data(self, adj_matrix: np.ndarray, nodes: List[int], filename: str = 'road_network_data.npz'):
+    def save_data(self, filename: str = 'road_network_data.json'):
         """
         Save the adjacency matrix and node data
         """
-        np.savez(
-            filename,
-            adjacency_matrix=adj_matrix,
-            nodes=nodes,
-        )
+        data = {
+            'adjacent_matrix' : self.adj_matrix,
+            'node_name_lookup': self.node_name_lookup,
+            'node_index_lookup': self.node_index_lookup,
+            'nodes': list(self.node_index_lookup.keys())
+        }
 
-        with open(filename.replace('.npz','.json'), 'w+') as file:
-            data = {
-                'key_locations': self.key_locations,
-                'center_point': self.center_point
-            }
-            file.write(json.dumps(data))
+        with open(filename, 'w+') as file:
+            file.write(json.dumps(data, ensure_ascii= False))
 
     def execute(self):
         # Create extractor instance
@@ -228,24 +249,24 @@ class RoadNetworkExtractor:
             
             # Create adjacency matrix
             print("Creating adjacency matrix...")
-            adj_matrix, nodes = extractor.create_adjacency_matrix(G, )
+            adj_matrix, node_name_lookup, node_index_lookup = extractor.create_matrix_representation(G, )
             
             # Save data
             print("Saving data...")
-            extractor.save_data(adj_matrix, nodes)
+            extractor.save_data()
             ox.save_graphml(G, 'road_network.graphml')
             # Create visualization
             print("Creating visualization...")
             m = extractor.visualize_network(G, )
             m.save('road_network_visualization.html')
             
-            print(f"Network has {len(nodes)} nodes and {G.number_of_edges()} edges")
+            print(f"Network has {len(G.nodes())} nodes and {G.number_of_edges()} edges")
             print("Data collection completed!")
             
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             raise
-        
+
 
 if __name__ == "__main__":
     e = RoadNetworkExtractor()

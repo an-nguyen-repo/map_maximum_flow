@@ -5,3 +5,5 @@ __pycache__/
 *.npz
 *.graphml
 *.ipynb
+road_network_data.json
+cache/

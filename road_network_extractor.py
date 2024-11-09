@@ -5,7 +5,6 @@ import numpy as np
 from typing import Dict, List, Tuple
 import folium
 from config import KEY_LOCATIONS, LOCATION_CENTROID
-import utils as ut
 import json 
 # Configure osmnx
 ox.config(use_cache=True, log_console=True)

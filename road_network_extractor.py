@@ -4,8 +4,9 @@ import pandas as pd
 import numpy as np
 from typing import Dict, List, Tuple
 import folium
-from config import KEY_LOCATIONS
+from config import KEY_LOCATIONS, LOCATION_CENTROID
 import utils as ut
+import json 
 # Configure osmnx
 ox.config(use_cache=True, log_console=True)
 
@@ -14,7 +15,7 @@ class RoadNetworkExtractor:
         # Key locations in HCMC (latitude, longitude)
         self.key_locations = KEY_LOCATIONS
         # Center point of our area of interest
-        self.center_point = ut.get_locations_centroids(KEY_LOCATIONS)
+        self.center_point = LOCATION_CENTROID
         
     def extract_road_network(self, distance: int = 500) -> nx.MultiDiGraph:
         """Extract road network within specified distance (in meters) from center point
@@ -72,10 +73,11 @@ class RoadNetworkExtractor:
         # First, unproject graph to get lat/lon coordinates
         G = ox.project_graph(G, to_crs='EPSG:4326')
         
-        for name, coords in self.key_locations.items():
+        for name, data in self.key_locations.items():
             # Get nearest node
+            coords = data['coords']
             nearest_node = ox.nearest_nodes(G, coords[1], coords[0])
-            
+            self.key_locations[name]['node_id'] = nearest_node
             # Get the coordinates of the nearest node
             node_coords = (G.nodes[nearest_node]['y'], G.nodes[nearest_node]['x'])
             
@@ -181,7 +183,8 @@ class RoadNetworkExtractor:
         m = folium.Map(location=self.center_point, zoom_start=13)
         
         # Add markers for key locations
-        for name, coords in self.key_locations.items():
+        for name, data in self.key_locations.items():
+            coords = data['coords']
             folium.Marker(
                 coords,
                 popup=name.replace('_', ' ').title(),
@@ -197,45 +200,53 @@ class RoadNetworkExtractor:
         np.savez(
             filename,
             adjacency_matrix=adj_matrix,
-            nodes=nodes
+            nodes=nodes,
         )
-        
 
-def main():
-    # Create extractor instance
-    extractor = RoadNetworkExtractor()
-    try:
-        # Extract road network
-        print("Extracting road network...")
-        G = extractor.extract_road_network(distance=2000)
+        with open(filename.replace('.npz','.json'), 'w+') as file:
+            data = {
+                'key_locations': self.key_locations,
+                'center_point': self.center_point
+            }
+            file.write(json.dumps(data))
+
+    def execute(self):
+        # Create extractor instance
+        extractor = RoadNetworkExtractor()
+        try:
+            # Extract road network
+            print("Extracting road network...")
+            G = extractor.extract_road_network(distance=2000)
+            
+            # Add capacity estimates
+            print("Adding capacity estimates...")
+            G = extractor.add_capacity_estimates(G)
+            
+            # Get nearest nodes to key locations
+            print("Finding nearest nodes...")
+            nearest_nodes = extractor.get_nearest_nodes(G)
+            
+            # Create adjacency matrix
+            print("Creating adjacency matrix...")
+            adj_matrix, nodes = extractor.create_adjacency_matrix(G, )
+            
+            # Save data
+            print("Saving data...")
+            extractor.save_data(adj_matrix, nodes)
+            ox.save_graphml(G, 'road_network.graphml')
+            # Create visualization
+            print("Creating visualization...")
+            m = extractor.visualize_network(G, )
+            m.save('road_network_visualization.html')
+            
+            print(f"Network has {len(nodes)} nodes and {G.number_of_edges()} edges")
+            print("Data collection completed!")
+            
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+            raise
         
-        # Add capacity estimates
-        print("Adding capacity estimates...")
-        G = extractor.add_capacity_estimates(G)
-        
-        # Get nearest nodes to key locations
-        print("Finding nearest nodes...")
-        nearest_nodes = extractor.get_nearest_nodes(G)
-        
-        # Create adjacency matrix
-        print("Creating adjacency matrix...")
-        adj_matrix, nodes = extractor.create_adjacency_matrix(G, )
-        
-        # Save data
-        print("Saving data...")
-        extractor.save_data(adj_matrix, nodes)
-        ox.save_graphml(G, 'road_network.graphml')
-        # Create visualization
-        print("Creating visualization...")
-        m = extractor.visualize_network(G, )
-        m.save('road_network_visualization.html')
-        
-        print(f"Network has {len(nodes)} nodes and {G.number_of_edges()} edges")
-        print("Data collection completed!")
-        
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        raise
 
 if __name__ == "__main__":
-    main()
+    e = RoadNetworkExtractor()
+    e.execute()

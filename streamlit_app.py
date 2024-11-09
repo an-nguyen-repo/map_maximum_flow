@@ -53,21 +53,22 @@ class TrafficFlowUI:
                 popup=loc_data['name'],
                 icon=folium.Icon(color='red')
             ).add_to(m)
-        
-        # Add paths if available
-        points = []
+
+        # add marker 
         for node_id in self.nodes:
             node_data = self.G.nodes[node_id]
             latitude = node_data['lat']
             longitude = node_data['lon']
-            points.append([latitude, longitude])
-
-        folium.PolyLine(points, 
-                color='#ba8e23',
-                dash_array='5',
-                weight = 1,
-                opacity='.75',
-                ).add_to(m)
+            folium.CircleMarker(
+                location=[latitude, longitude],
+                radius=3,  
+                color='blue', 
+                fill=True,
+                fillColor='blue', 
+                fillOpacity=0.6,
+                weight=0.5 
+            ).add_to(m)
+        
         return m
 
 def main():

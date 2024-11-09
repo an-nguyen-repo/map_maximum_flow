@@ -31,9 +31,10 @@ class RoadNetworkExtractor:
         G = ox.graph_from_point(
             self.center_point,
             dist=distance,
+            dist_type= 'network',
             network_type='drive',
             simplify=True,
-            retain_all=True,
+            retain_all=False,
             truncate_by_edge=True
         )
         # Print network stats
@@ -238,7 +239,7 @@ class RoadNetworkExtractor:
         try:
             # Extract road network
             print("Extracting road network...")
-            G = extractor.extract_road_network(distance=2000)
+            G = extractor.extract_road_network(distance=3000)
             
             # Add capacity estimates
             print("Adding capacity estimates...")

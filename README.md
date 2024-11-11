@@ -36,8 +36,14 @@ python3 -m venv .py-env
 ```
 
 3. Activate the virtual environment:
+On Mac
 ```bash
 source .py-env/bin/activate
+```
+or 
+On Window 
+```bash
+source .py-env/Scripts/activate
 ```
 
 4. Install required dependencies:

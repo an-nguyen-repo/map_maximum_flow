@@ -1,15 +1,18 @@
+# streamlit_app.py
+
 import streamlit as st
 import folium
-import numpy as np
 from streamlit_folium import st_folium
 import osmnx as ox
-from maximum_flow_algorithms import Edmond_Karps, Dinic
-from config import KEY_LOCATIONS
-import pandas as pd 
+from maximum_flow_algorithms import Edmond_Karps, Dinic, FordFulkerson
 import json 
 import time 
 
+INACTIVE_COLOR = '#A9A9A9'
+ACTIVE_COLOR = '#FF5733' 
+
 class TrafficFlowUI:
+
     def __init__(self):
         # Load data
         self.load_data()
@@ -28,18 +31,49 @@ class TrafficFlowUI:
             self.key_locations = data['key_locations']
             self.center_point = data['center_point']
             
-            # Create simple node mapping
-            #self.node_indices = {node: idx for idx, node in enumerate(self.nodes)}
+            # Create reverse mappings
+            self.index_node_lookup = {v: int(k) for k, v in self.node_index_lookup.items()}
+            self.node_id_to_name = {v: k for k, v in self.node_name_lookup.items()}
             
-            # # Load graph for visualization
+            # Load graph for visualization
             self.G = ox.load_graphml('road_network.graphml')
             
-                
         except Exception as e:
             st.error(f"Error loading data: {str(e)}")
             raise
 
-    def create_basic_map(self, ):
+
+    def draw_node(self, m, node_id,  color = INACTIVE_COLOR):
+        node_data = self.G.nodes[node_id]
+        latitude = node_data['lat']
+        longitude = node_data['lon']
+        folium.CircleMarker(
+                location=[latitude, longitude],
+                radius=3,  
+                color=color, 
+                fill=True,
+                fillColor=color, 
+                fillOpacity=0.8,
+                weight=0.5 
+            ).add_to(m)
+
+    def draw_edge(self, m, node_fr_id, node_to_id, color = ACTIVE_COLOR):
+        coordinates = [
+            [self.G.nodes[node_fr_id]['lat'], self.G.nodes[node_fr_id]['lon']] ,  # lat, long
+            [self.G.nodes[node_to_id]['lat'], self.G.nodes[node_to_id]['lon']]
+        ]
+
+        # Create a PolyLine
+        folium.PolyLine(
+            locations=coordinates,
+            weight=8,
+            color=color,
+            opacity=0.8,
+        ).add_to(m)
+
+    
+
+    def create_basic_map(self, paths= None ):
         """Create a basic map with locations and paths"""
         # Create base map
         center_lat = self.center_point[0]
@@ -54,21 +88,22 @@ class TrafficFlowUI:
                 icon=folium.Icon(color='red')
             ).add_to(m)
 
-        # add marker 
+        # Add markers for all nodes 
         for node_id in self.nodes:
-            node_data = self.G.nodes[node_id]
-            latitude = node_data['lat']
-            longitude = node_data['lon']
-            folium.CircleMarker(
-                location=[latitude, longitude],
-                radius=3,  
-                color='blue', 
-                fill=True,
-                fillColor='blue', 
-                fillOpacity=0.6,
-                weight=0.5 
-            ).add_to(m)
-        
+            self.draw_node(m, node_id=node_id, )
+
+
+        # DRAW path if exists 
+        if paths:
+            for path in paths:
+                path_node = path['path']
+                for idx, node_index in enumerate(path_node):
+                    node_id = self.index_node_lookup.get(node_index)
+                    self.draw_node(m, node_id= node_id, color = ACTIVE_COLOR)
+                    if idx < (len(path_node) - 1) :
+                        next_node_id = self.index_node_lookup.get(path_node[idx +1 ])
+                        self.draw_edge(m, node_fr_id= node_id, node_to_id= next_node_id,)
+
         return m
 
 def main():
@@ -100,7 +135,7 @@ def main():
             # Algorithm selection
             algorithm = st.selectbox(
                 "Algorithm",
-                options=["Edmonds-Karp", "Dinic"]
+                options=["Edmonds-Karp", "Dinic", "Ford-Fulkerson"]
             )
             
             calculate = st.button("Calculate Flow", use_container_width=True)
@@ -109,29 +144,32 @@ def main():
         with col2:
             if calculate:
                 with st.spinner("Calculating maximum flow..."):
-                    # Get source sink index in adjacent matrix 
-                    source_idx = app.node_index_lookup.get(str(app.node_name_lookup.get(source)))
-                    sink_idx = app.node_index_lookup.get(str(app.node_name_lookup.get(dest)))
-                    print(source_idx, sink_idx)
+                    # Get source and sink indices in adjacency matrix 
+                    source_node_id = app.node_name_lookup.get(source)
+                    sink_node_id = app.node_name_lookup.get(dest)
+                    source_idx = app.node_index_lookup.get(str(source_node_id))
+                    sink_idx = app.node_index_lookup.get(str(sink_node_id))
+                    
                     # Initialize algorithm
-                    edmonds = Edmond_Karps(app.adj_matrix)
-                    dinic = Dinic(app.adj_matrix)
-                    # Run selected algorithm
                     if algorithm == "Edmonds-Karp":
-                        start = time.time()
-                        flow = edmonds.execute(source= source_idx, sink= sink_idx)
-                        end = time.time()
-                        run_time = end - start 
+                        algo = Edmond_Karps(app.adj_matrix)
+                    elif algorithm == "Ford-Fulkerson":
+                        algo = FordFulkerson(app.adj_matrix)
                     else:
-                        start = time.time()
-                        flow = dinic.execute(source= source_idx, sink= sink_idx)
-                        end = time.time()
-                        run_time = end - start 
+                        algo = Dinic(app.adj_matrix)
+                    
+                    # Run selected algorithm
+                    start = time.time()
+                    flow = algo.execute(source=source_idx, sink=sink_idx)
+                    end = time.time()
+                    run_time = end - start
+                    paths = algo.paths
                     
                     # Store results
                     st.session_state.flow_results = {
                         'flow': flow,
                         'time': run_time,
+                        'paths': paths
                     }
             
             # Display results if available
@@ -139,7 +177,7 @@ def main():
                 results = st.session_state.flow_results
                 
                 # Display metrics
-                metric_cols = st.columns(3)
+                metric_cols = st.columns(2)
                 with metric_cols[0]:
                     st.metric("Maximum Flow", f"{results['flow']:.1f} vehicles/hour")
                 with metric_cols[1]:
@@ -147,28 +185,32 @@ def main():
                 
                 # Display map
                 st.subheader("Flow Visualization")
-                m = app.create_basic_map()
+                m = app.create_basic_map(paths= results['paths'])
                 st_folium(m, width=800)
                 
-                # # Display paths
-                # if results['paths']:
-                #     st.subheader("Path Details")
-                #     for i, (path, flow) in enumerate(zip(results['paths'], results['flow_values'])):
-                #         st.text(f"Path {i+1}: Flow = {flow:.1f} vehicles/hour")
+                # Display paths
+                if results['paths']:
+                    st.subheader("Path Details")
+                    for i, path_info in enumerate(results['paths']):
+                        path = path_info['path']
+                        flow = path_info['flow']
+                        path_nodes = []
+                        for node_idx in path:
+                            node_id = app.index_node_lookup.get(node_idx)
+                            node_name = app.node_id_to_name.get(node_id, str(node_id))
+                            path_nodes.append(node_name)
+                        # Create the formatted string
+                        path_str = f"Path {i+1}: "
+                        for j in range(len(path_nodes) - 1):
+                            path_str += f"{path_nodes[j]} ----({flow})-----> "
+                        path_str += f"{path_nodes[-1]}"
+                        st.write(path_str)
+                        st.write('\n')
             else:
                 # Display initial map
                 st.subheader("Current Network")
                 m = app.create_basic_map()
                 st_folium(m, width=800)
-        
-        # Add information about the application
-        # st.sidebar.markdown("""
-        # ### About
-        # This application analyzes traffic flow between major points in Ho Chi Minh City
-        # using maximum flow algorithms. The results show the theoretical maximum number
-        # of vehicles that could travel between the selected points given the road network
-        # capacity.
-        # """)
         
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")

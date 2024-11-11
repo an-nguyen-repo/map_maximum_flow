@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from typing import Dict, List, Tuple
 import folium
-from config import KEY_LOCATIONS, LOCATION_CENTROID
+from config import KEY_LOCATIONS, LOCATION_CENTROID, MAP_RADIUS
 import json 
 # Configure osmnx
 ox.config(use_cache=True, log_console=True)
@@ -239,7 +239,7 @@ class RoadNetworkExtractor:
         try:
             # Extract road network
             print("Extracting road network...")
-            G = extractor.extract_road_network(distance=3000)
+            G = extractor.extract_road_network(distance=MAP_RADIUS)
             
             # Add capacity estimates
             print("Adding capacity estimates...")

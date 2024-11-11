@@ -7,3 +7,5 @@ __pycache__/
 *.ipynb
 road_network_data.json
 cache/
+*.html
+*.py-env

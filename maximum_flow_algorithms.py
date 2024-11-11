@@ -223,7 +223,7 @@ if __name__ == "__main__":
     print("Ford-Fulkerson: Paths: " , g.paths)
 
     print('TEST RUN ON MAP DATA')
-    with open('./road_network_data.json') as file:
+    with open('./road_network_data.json', encoding='utf-8') as file:
         data = json.load(file)
 
     graph = data['adjacent_matrix']

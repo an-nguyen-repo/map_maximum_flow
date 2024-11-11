@@ -21,7 +21,7 @@ class TrafficFlowUI:
         """Load the network data"""
         try:
             # Load network data
-            with open('./road_network_data.json', 'r') as file:
+            with open('./road_network_data.json', 'r', encoding='utf-8') as file:
                 data = json.load(file)
 
             self.adj_matrix = data['adjacent_matrix']

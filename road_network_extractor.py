@@ -230,7 +230,7 @@ class RoadNetworkExtractor:
             'center_point': self.center_point
         }
 
-        with open(filename, 'w+') as file:
+        with open(filename, 'w+', encoding='utf-8') as file:
             file.write(json.dumps(data, ensure_ascii= False))
 
     def execute(self):

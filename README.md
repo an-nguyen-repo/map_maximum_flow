@@ -15,6 +15,8 @@ An application to analyze maximum flow in road networks based on OpenStreetMap d
 
 The `road_network_extractor.py` download map data from api, including intersection locations (node) and road connecting locations (edge). Each road has an attributes on type of road (`highway`) and number of lanes. A capacity mapping based on type of road is predined, and the final estimate of `road capacity = road_capacity * number_of_lanes`. 
 
+The map data is defined by the centroid (mean of lattitudes and longtitudes) of `KEY_LOCATIONS` and the `MAP_RADIUS`. The larger the `MAP_RADIUS`, the heavier the data, which might affect performance in general. In case when exact coordinates of `KEY_LOCATIONS` do not fall inside the map region due to small `MAP_RADIUS`, a closest node to the `KEY_LOCATIONS` will be computed and use as a replacement.
+
 ## Installation
 
 ### Prerequisites

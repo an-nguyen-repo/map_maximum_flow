@@ -1,9 +1,8 @@
 # maximum_flow_algorithms.py
 
-import numpy as np
-from collections import deque
 import copy
 import json
+from collections import deque
 
 
 class MaximumFlowAlgo:
@@ -15,12 +14,10 @@ class MaximumFlowAlgo:
         """
         self.graph = copy.deepcopy(graph)
         self.n_vertex = len(graph)
+        self.paths = []
 
 
-class Edmond_Karps(MaximumFlowAlgo):
-    def __init__(self, graph):
-        super().__init__(graph)
-        self.paths = []  # To store paths and their flows
+class EdmondKarps(MaximumFlowAlgo):
 
     def _bfs(self, source: int, sink: int, parent: list):
         visited = [False] * self.n_vertex
@@ -99,7 +96,6 @@ class Dinic(MaximumFlowAlgo):
         super().__init__(graph)
         self.adj = [[] for _ in range(self.n_vertex)]
         self.level = [0 for _ in range(self.n_vertex)]
-        self.paths = []  # To store blocking flows (paths and their flows)
         self.adjacent_matrix_to_edge()
 
     def add_edge(self, u: int, v: int, C: int):
@@ -167,9 +163,6 @@ class Dinic(MaximumFlowAlgo):
 
 
 class FordFulkerson(MaximumFlowAlgo):
-    def __init__(self, graph):
-        super().__init__(graph)
-        self.paths = []  # To store paths and their flows
 
     def _dfs(self, source: int, sink: int, visited: list, flow: float):
         """Depth-First Search to find an augmenting path"""
@@ -217,7 +210,7 @@ if __name__ == "__main__":
     sink = 5
 
     # Edmond-Karps
-    g = Edmond_Karps(graph)
+    g = EdmondKarps(graph)
     print("Edmond-Karps: The maximum possible flow is %d " % g.execute(source, sink))
     print("Edmond-Karps: Paths: ", g.paths)
 
@@ -225,6 +218,7 @@ if __name__ == "__main__":
     g = Dinic(graph)
     print("Dinic: The maximum possible flow is %d " % g.execute(source, sink))
     print("Dinic: Paths: ", g.paths)
+
     # Ford-Fulkerson
     g = FordFulkerson(graph)
     print("Ford-Fulkerson: The maximum possible flow is %d " % g.execute(source, sink))
@@ -241,10 +235,11 @@ if __name__ == "__main__":
     sink_name = "Tan Son Nhat International Airport"
     source = node_id_lookup.get(str(node_name_lookup.get(source_name)))
     sink = node_id_lookup.get(str(node_name_lookup.get(sink_name)))
-    print(source, sink)
+
+    print("Source: ", source, "Sink: ", sink)
 
     # Edmond-Karps
-    g = Edmond_Karps(graph)
+    g = EdmondKarps(graph)
     print("Edmond-Karps: The maximum possible flow is %d " % g.execute(source, sink))
     print("Edmond-Karps: Paths: ", g.paths)
 

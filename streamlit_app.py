@@ -1,15 +1,15 @@
 # streamlit_app.py
 
-import streamlit as st
-import folium
-from streamlit_folium import st_folium
-import osmnx as ox
-from maximum_flow_algorithms import Edmond_Karps, Dinic, FordFulkerson
 import json
 import time
 
-INACTIVE_COLOR = "#A9A9A9"
-ACTIVE_COLOR = "#FF5733"
+import folium
+import osmnx as ox
+import streamlit as st
+from streamlit_folium import st_folium
+
+from config import ACTIVE_COLOR, INACTIVE_COLOR
+from maximum_flow_algorithms import Dinic, EdmondKarps, FordFulkerson
 
 
 class TrafficFlowUI:
@@ -161,7 +161,7 @@ def main():
 
                     # Initialize algorithm
                     if algorithm == "Edmonds-Karp":
-                        algo = Edmond_Karps(app.adj_matrix)
+                        algo = EdmondKarps(app.adj_matrix)
                     elif algorithm == "Ford-Fulkerson":
                         algo = FordFulkerson(app.adj_matrix)
                     else:

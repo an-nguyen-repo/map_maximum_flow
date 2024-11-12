@@ -30,5 +30,5 @@ tzdata==2024.2
 urllib3==2.2.3
 watchdog==6.0.0
 xyzservices==2024.9.0
-streamlit
-streamlit_folium
+streamlit==1.40.0
+streamlit_folium==0.23.1

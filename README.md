@@ -68,7 +68,7 @@ streamlit run streamlit_app.py
 
 ## User Interface Guide
 
-![Map Flow Analysis Demo](.docs/map_demo.png)
+![Map Flow Analysis Demo](docs/map_demo.png)
 
 ### Usage Instructions
 

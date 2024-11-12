@@ -3,7 +3,8 @@
 import numpy as np
 from collections import deque
 import copy
-import json 
+import json
+
 
 class MaximumFlowAlgo:
     def __init__(self, graph):
@@ -14,6 +15,7 @@ class MaximumFlowAlgo:
         """
         self.graph = copy.deepcopy(graph)
         self.n_vertex = len(graph)
+
 
 class Edmond_Karps(MaximumFlowAlgo):
     def __init__(self, graph):
@@ -57,11 +59,13 @@ class Edmond_Karps(MaximumFlowAlgo):
             path_flow = float("Inf")
             s = sink
             while s != source:
-                path_flow = min(path_flow, self.graph[parent[s]][s])  # Min path bottleneck
+                path_flow = min(
+                    path_flow, self.graph[parent[s]][s]
+                )  # Min path bottleneck
                 s = parent[s]
 
             # Add path and flow to paths list
-            self.paths.append({'path': path, 'flow': path_flow})
+            self.paths.append({"path": path, "flow": path_flow})
 
             max_flow += path_flow
             v = sink
@@ -72,6 +76,7 @@ class Edmond_Karps(MaximumFlowAlgo):
                 v = parent[v]
 
         return max_flow
+
 
 class Edge:
     def __init__(self, v: int, flow: int, C: int, rev: int):
@@ -87,6 +92,7 @@ class Edge:
         self.flow = flow
         self.C = C
         self.rev = rev
+
 
 class Dinic(MaximumFlowAlgo):
     def __init__(self, graph):
@@ -128,7 +134,7 @@ class Dinic(MaximumFlowAlgo):
     def sendFlow(self, u: int, flow: int, sink: int, start: list, path: list):
         """DFS to send flow after levels have been assigned"""
         if u == sink:
-            self.paths.append({'path': path.copy(), 'flow': flow})
+            self.paths.append({"path": path.copy(), "flow": flow})
             return flow
 
         while start[u] < len(self.adj[u]):
@@ -153,11 +159,12 @@ class Dinic(MaximumFlowAlgo):
             start = [0] * self.n_vertex
             while True:
                 path = [source]
-                flow = self.sendFlow(source, float('Inf'), sink, start, path)
+                flow = self.sendFlow(source, float("Inf"), sink, start, path)
                 if flow == 0:
                     break
                 total += flow
         return total
+
 
 class FordFulkerson(MaximumFlowAlgo):
     def __init__(self, graph):
@@ -186,13 +193,14 @@ class FordFulkerson(MaximumFlowAlgo):
 
         while True:
             visited = [False] * self.n_vertex
-            flow, path = self._dfs(source, sink, visited, float('Inf'))
+            flow, path = self._dfs(source, sink, visited, float("Inf"))
             if flow == 0:
                 break
             max_flow += flow
-            self.paths.append({'path': path, 'flow': flow})
+            self.paths.append({"path": path, "flow": flow})
 
         return max_flow
+
 
 if __name__ == "__main__":
     # Test case
@@ -202,35 +210,35 @@ if __name__ == "__main__":
         [0, 4, 0, 0, 14, 0],
         [0, 0, 9, 0, 0, 20],
         [0, 0, 0, 7, 0, 4],
-        [0, 0, 0, 0, 0, 0]
+        [0, 0, 0, 0, 0, 0],
     ]
-    
-    source = 0 
+
+    source = 0
     sink = 5
 
     # Edmond-Karps
     g = Edmond_Karps(graph)
     print("Edmond-Karps: The maximum possible flow is %d " % g.execute(source, sink))
-    print("Edmond-Karps: Paths: " , g.paths)
+    print("Edmond-Karps: Paths: ", g.paths)
 
     # Dinic
     g = Dinic(graph)
     print("Dinic: The maximum possible flow is %d " % g.execute(source, sink))
-    print("Dinic: Paths: " , g.paths)
+    print("Dinic: Paths: ", g.paths)
     # Ford-Fulkerson
     g = FordFulkerson(graph)
     print("Ford-Fulkerson: The maximum possible flow is %d " % g.execute(source, sink))
-    print("Ford-Fulkerson: Paths: " , g.paths)
+    print("Ford-Fulkerson: Paths: ", g.paths)
 
-    print('TEST RUN ON MAP DATA')
-    with open('./road_network_data.json', encoding='utf-8') as file:
+    print("TEST RUN ON MAP DATA")
+    with open("./road_network_data.json", encoding="utf-8") as file:
         data = json.load(file)
 
-    graph = data['adjacent_matrix']
-    node_name_lookup = data['node_name_lookup']
-    node_id_lookup = data['node_index_lookup']
-    source_name = 'Hang Xanh Intersection'
-    sink_name = 'Tan Son Nhat International Airport'
+    graph = data["adjacent_matrix"]
+    node_name_lookup = data["node_name_lookup"]
+    node_id_lookup = data["node_index_lookup"]
+    source_name = "Hang Xanh Intersection"
+    sink_name = "Tan Son Nhat International Airport"
     source = node_id_lookup.get(str(node_name_lookup.get(source_name)))
     sink = node_id_lookup.get(str(node_name_lookup.get(sink_name)))
     print(source, sink)
@@ -238,14 +246,14 @@ if __name__ == "__main__":
     # Edmond-Karps
     g = Edmond_Karps(graph)
     print("Edmond-Karps: The maximum possible flow is %d " % g.execute(source, sink))
-    print("Edmond-Karps: Paths: " , g.paths)
+    print("Edmond-Karps: Paths: ", g.paths)
 
     # Dinic
     g = Dinic(graph)
     print("Dinic: The maximum possible flow is %d " % g.execute(source, sink))
-    print("Dinic: Paths: " , g.paths)
+    print("Dinic: Paths: ", g.paths)
 
     # Ford-Fulkerson
     g = FordFulkerson(graph)
     print("Ford-Fulkerson: The maximum possible flow is %d " % g.execute(source, sink))
-    print("Ford-Fulkerson: Paths: " , g.paths)
+    print("Ford-Fulkerson: Paths: ", g.paths)

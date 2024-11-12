@@ -13,7 +13,7 @@ An application to analyze maximum flow in road networks based on OpenStreetMap d
 └── streamlit_app.py          # User interface
 ```
 
-The `road_network_extractor.py` download map data from api, including intersection locations (node) and road connecting locations (edge). Each road has an attributes on type of road (`highway`) and number of lanes. A capacity mapping based on type of road is predined, and the final estimate of `road capacity = road_capacity * number_of_lanes`. 
+The `road_network_extractor.py` download map data from api, including intersection locations (node) and road connecting locations (edge). Each road has an attributes on type of road (`highway`) and number of lanes. A capacity mapping based on type of road is predined, and the final estimate of `road capacity = road_capacity * number_of_lanes`.
 
 The map data is defined by the centroid (mean of lattitudes and longtitudes) of `KEY_LOCATIONS` and the `MAP_RADIUS`. The larger the `MAP_RADIUS`, the heavier the data, which might affect performance in general. In case when exact coordinates of `KEY_LOCATIONS` do not fall inside the map region due to small `MAP_RADIUS`, a closest node to the `KEY_LOCATIONS` will be computed and use as a replacement.
 
@@ -40,8 +40,8 @@ On Mac
 ```bash
 source .py-env/bin/activate
 ```
-or 
-On Window 
+or
+On Window
 ```bash
 source .py-env/Scripts/activate
 ```
@@ -58,7 +58,7 @@ pip install -r requirements.txt
 bash map_app.sh
 ```
 
-2. In case bash command does not work properly. Run below command in sequence 
+2. In case bash command does not work properly. Run below command in sequence
 ```bash
 python3 road_network_extractor.py
 python3 maximum_flow_algorithms.py
@@ -68,7 +68,7 @@ streamlit run streamlit_app.py
 
 ## User Interface Guide
 
-![Map Flow Analysis Demo](./map_demo.png)
+![Map Flow Analysis Demo](.docs/map_demo.png)
 
 ### Usage Instructions
 
